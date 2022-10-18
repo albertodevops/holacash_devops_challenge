@@ -1,0 +1,55 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+
+groups:
+  - docker
+  - holacash
+
+packages:
+  - docker
+  - sshd
+  - vim
+  - python3
+  - jq
+
+users:
+  - name: holacash-user
+    lock_passwd: true
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - "${ssh_public_key}"
+      - "${ssh_bastion_key}"
+    groups:
+      - docker
+      - holacash
+      - adm
+      - systemd-journal
+    sudo:
+      - ALL=(ALL) NOPASSWD:ALL
+  - name: root
+    ssh-authorized-keys:
+      - "${ssh_public_key}"
+      - "${ssh_bastion_key}"
+
+write_files:
+-   path: /usr/local/bin/instance_config.sh
+    content: ${instance_config_script}
+    encoding: b64
+    permissions: '0755'
+
+runcmd:
+  - [ systemctl, daemon-reload ]
+  - [ systemctl, restart, --no-block, sshd ]
+  - [ update-ca-trust, extract ]
+  - [ systemctl, enable, docker ]
+  - [ systemctl, restart, docker ]
+  - /usr/local/bin/instance_config.sh
+  - "docker run -d --name holacash-nginx -p 80:80 -v /var/nginx_content:/usr/share/nginx/html:ro nginx"
+
+final_message: "The system is finally up, after $UPTIME seconds"
+
+
+
+

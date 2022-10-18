@@ -1,0 +1,90 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+
+groups:
+  - holacash
+
+packages:
+  - sshd
+  - vim
+  - python3
+  - jq
+
+users:
+  - name: holacash-user
+    lock_passwd: true
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - "${ssh_public_key}"
+    groups:
+      - holacash
+      - adm
+      - systemd-journal
+    sudo:
+      - ALL=(ALL) NOPASSWD:ALL
+  - name: root
+    ssh-authorized-keys:
+      - "${ssh_public_key}"
+
+# the ssh private key must be obtained from secret manager or vault service
+ssh_keys:
+  rsa_private: |
+    -----BEGIN RSA PRIVATE KEY-----
+    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
+    -----END RSA PRIVATE KEY-----
+
+  rsa_public: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBGxF9S4bwNwtJk/OsTuaHpgF0KXTNCDw8K1QCI5kGpYtOAdm2H8ViKHIhSsiQk79X6TPHSTpfN9bWgfjZHYj1Hn/EWCc6LSsBGfHnO3elu94RpvvaeCnlzjbYOaAv8qW0k+dHCBqooGjSbEc9W2f6sKALbPUTkrzZlIkWnSsowiJBSBTmOBSOIf5+sqUjnx8ptNlOrhbxtutOujOwXCxpMDK8HaDfooCisEbq7oMp5fXeS6NT936sgm+rluHujVZ7IrRC3W7BqBBZsbt4FG1fGgPJsYnTDanFO9OA3tRNl2vkQj7D99MvIxjtjDh/piMaEfF7Cr7vl8OBI9iMm1MaACUuv9iSNtTPqppgWJuarekzXKKtrN06muY3oDnM2l3oqoLrzo5WmHei991et7ifX1foqHWlKJmqzJf6JV7s1BgFiSV3Aa90DBp2SL28nPYl7KFeUNC/0k2yqrjzeK81BB+oixiYNIfK/rollksDwOzZhmNazcMht4Kj5U2B6CU=
+
+write_files:
+-   path: /usr/local/bin/instance_config.sh
+    content: ${instance_config_script}
+    encoding: b64
+    permissions: '0755'
+
+runcmd:
+  - [ systemctl, daemon-reload ]
+  - [ systemctl, restart, --no-block, sshd ]
+  - [ update-ca-trust, extract ]
+  - [ systemctl, restart, ssh ]
+  - /usr/local/bin/instance_config.sh
+  - [ yum, update, -y ]
+
+final_message: "The system is finally up, after $UPTIME seconds"
